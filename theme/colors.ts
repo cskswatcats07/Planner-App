@@ -1,0 +1,58 @@
+export const colors = {
+  light: {
+    primary: '#6366F1',
+    primaryLight: '#A5B4FC',
+    primaryDark: '#4F46E5',
+    background: '#FAFAF8',
+    surface: '#FFFFFF',
+    surfaceElevated: '#F5F5F3',
+    text: '#1C1C1E',
+    textSecondary: '#6B7280',
+    textTertiary: '#9CA3AF',
+    border: '#E5E5E3',
+    borderLight: '#F0F0EE',
+    error: '#DC2626',
+    errorLight: '#FEE2E2',
+    success: '#059669',
+    successLight: '#D1FAE5',
+    warning: '#D97706',
+    warningLight: '#FEF3C7',
+    overlay: 'rgba(0, 0, 0, 0.4)',
+    card: '#FFFFFF',
+  },
+  dark: {
+    primary: '#818CF8',
+    primaryLight: '#6366F1',
+    primaryDark: '#A5B4FC',
+    background: '#1C1C1E',
+    surface: '#2C2C2E',
+    surfaceElevated: '#3A3A3C',
+    text: '#F5F5F3',
+    textSecondary: '#9CA3AF',
+    textTertiary: '#6B7280',
+    border: '#3A3A3C',
+    borderLight: '#2C2C2E',
+    error: '#EF4444',
+    errorLight: '#7F1D1D',
+    success: '#34D399',
+    successLight: '#064E3B',
+    warning: '#FBBF24',
+    warningLight: '#78350F',
+    overlay: 'rgba(0, 0, 0, 0.6)',
+    card: '#2C2C2E',
+  },
+} as const;
+
+export const moduleColors = {
+  timeBlindness: { main: '#F59E0B', light: '#FEF3C7', dark: '#D97706' },
+  finance: { main: '#10B981', light: '#D1FAE5', dark: '#059669' },
+  tasks: { main: '#3B82F6', light: '#DBEAFE', dark: '#2563EB' },
+  memory: { main: '#8B5CF6', light: '#EDE9FE', dark: '#7C3AED' },
+  dopamine: { main: '#EC4899', light: '#FCE7F3', dark: '#DB2777' },
+  speech: { main: '#14B8A6', light: '#CCFBF1', dark: '#0D9488' },
+  thoughts: { main: '#F97316', light: '#FFEDD5', dark: '#EA580C' },
+  impulse: { main: '#EF4444', light: '#FEE2E2', dark: '#DC2626' },
+} as const;
+
+export type ColorScheme = keyof typeof colors;
+export type ModuleColorKey = keyof typeof moduleColors;
