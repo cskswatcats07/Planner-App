@@ -33,6 +33,7 @@ import {
   openAppSettings,
   type NotificationPermissionState,
 } from '../../lib/notifications';
+import { useToolStore } from '../../store/toolStore';
 
 const DEFAULT_DURATION_MINUTES = 25;
 const DEFAULT_NUDGE_MINUTES = 5;
@@ -51,6 +52,7 @@ function formatMMSS(seconds: number): string {
 export default function TimeBlindnessScreen() {
   const theme = useTheme();
   const timeColors = moduleColors.timeBlindness;
+  const { markUsed } = useToolStore();
 
   const [selectedPurposeId, setSelectedPurposeId] = useState<
     (typeof TIME_PURPOSE_PRESETS)[number]['id']
@@ -86,6 +88,10 @@ export default function TimeBlindnessScreen() {
     () => TIME_PURPOSE_PRESETS.find((preset) => preset.id === selectedPurposeId) ?? TIME_PURPOSE_PRESETS[0],
     [selectedPurposeId]
   );
+
+  useEffect(() => {
+    markUsed('timeBlindness');
+  }, [markUsed]);
 
   const durationMinutes = sanitizeMinutes(
     Number.parseInt(durationInput, 10),

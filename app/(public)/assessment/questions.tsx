@@ -8,7 +8,11 @@ import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { LikertScale } from '../../../components/assessment/LikertScale';
 import { useTheme } from '../../../theme';
 import { spacing } from '../../../theme/spacing';
-import { ASSESSMENT_QUESTIONS, CATEGORY_LABELS } from '../../../constants/assessment-questions';
+import {
+  ASSESSMENT_QUESTIONS,
+  CATEGORY_LABELS,
+  QUICK_ASSESSMENT_QUESTIONS,
+} from '../../../constants/assessment-questions';
 import { DISCLAIMERS } from '../../../constants/disclaimers';
 import { useAssessmentStore } from '../../../store/assessmentStore';
 import type { LikertValue } from '../../../types/assessment';
@@ -20,14 +24,18 @@ export default function AssessmentQuestionsScreen() {
   const {
     answers,
     currentQuestionIndex,
+    mode,
     setAnswer,
     nextQuestion,
     previousQuestion,
     computeAndSaveResults,
   } = useAssessmentStore();
 
-  const question = ASSESSMENT_QUESTIONS[currentQuestionIndex];
-  const totalQuestions = ASSESSMENT_QUESTIONS.length;
+  const questionSet =
+    mode === 'quick' ? QUICK_ASSESSMENT_QUESTIONS : ASSESSMENT_QUESTIONS;
+
+  const question = questionSet[currentQuestionIndex];
+  const totalQuestions = questionSet.length;
   const progress = (currentQuestionIndex + 1) / totalQuestions;
 
   const currentAnswer = answers.find((a) => a.questionId === question.id);
@@ -57,7 +65,10 @@ export default function AssessmentQuestionsScreen() {
 
   return (
     <SafeAreaWrapper>
-      <Header title="Assessment" showBack />
+      <Header
+        title={mode === 'quick' ? 'Quick Assessment' : 'Detailed Assessment'}
+        showBack
+      />
       <View style={styles.progressSection}>
         <ProgressBar progress={progress} />
         <Text style={[styles.progressText, { color: theme.colors.textTertiary }]}>

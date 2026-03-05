@@ -18,22 +18,30 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   isInitialized: false,
 
   initialize: async () => {
+    const AUTH_INIT_TIMEOUT_MS = 8000;
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      set({ session, user: session?.user ?? null });
+    });
+
+    const timeoutId = setTimeout(() => {
+      set((s) => {
+        if (s.isInitialized) return s;
+        return { isLoading: false, isInitialized: true };
+      });
+    }, AUTH_INIT_TIMEOUT_MS);
+
     try {
       const { data } = await supabase.auth.getSession();
+      clearTimeout(timeoutId);
       set({
         session: data.session,
         user: data.session?.user ?? null,
         isLoading: false,
         isInitialized: true,
       });
-
-      supabase.auth.onAuthStateChange((_event, session) => {
-        set({
-          session,
-          user: session?.user ?? null,
-        });
-      });
     } catch {
+      clearTimeout(timeoutId);
       set({ isLoading: false, isInitialized: true });
     }
   },

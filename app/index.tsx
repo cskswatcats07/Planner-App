@@ -8,12 +8,19 @@ import { spacing } from '../theme/spacing';
 import { useAuthStore } from '../store/authStore';
 import { useAssessmentStore } from '../store/assessmentStore';
 import { DISCLAIMERS } from '../constants/disclaimers';
+import { APP_MODULES } from '../constants/modules';
+import { useToolStore, sortModulesWithPrefs } from '../store/toolStore';
 
 export default function HomeScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { user, isLoading, isInitialized } = useAuthStore();
   const { loadSavedResult, result } = useAssessmentStore();
+  const { preferences, hydrate } = useToolStore();
+
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
 
   useEffect(() => {
     loadSavedResult();
@@ -37,6 +44,9 @@ export default function HomeScreen() {
     );
   }
 
+  const orderedModules = sortModulesWithPrefs(APP_MODULES, preferences);
+  const primaryModules = orderedModules.slice(0, 8);
+
   return (
     <SafeAreaWrapper>
       <View style={styles.container}>
@@ -47,6 +57,37 @@ export default function HomeScreen() {
           <Text style={[styles.tagline, { color: theme.colors.textSecondary }]}>
             Your personal guide to daily life management
           </Text>
+        </View>
+
+        <View style={styles.toolsSection}>
+          <Text style={[styles.toolsTitle, { color: theme.colors.text }]}>
+            Your tools at a glance
+          </Text>
+          <View style={styles.toolsGrid}>
+            {primaryModules.map((mod) => (
+              <Button
+                key={mod.id}
+                title={mod.shortName}
+                onPress={() => router.push(mod.route)}
+                variant="ghost"
+                size="sm"
+                fullWidth={false}
+                style={styles.toolChip}
+              />
+            ))}
+          </View>
+          <Button
+            title="Customize tools"
+            onPress={() => router.push('/(public)/tools-customize')}
+            variant="ghost"
+            size="sm"
+          />
+          <Button
+            title="Take a 30-second tour"
+            onPress={() => router.push('/(public)/tour')}
+            variant="ghost"
+            size="sm"
+          />
         </View>
 
         <View style={styles.actions}>
@@ -115,11 +156,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingVertical: spacing['3xl'],
+    paddingVertical: spacing['2xl'],
   },
   hero: {
     alignItems: 'center',
-    paddingTop: spacing['5xl'],
+    paddingTop: spacing['3xl'],
   },
   logo: {
     fontSize: 40,
@@ -127,10 +168,29 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
   },
   tagline: {
-    fontSize: 16,
+    fontSize: 15,
     marginTop: spacing.sm,
     textAlign: 'center',
     lineHeight: 24,
+  },
+  toolsSection: {
+    paddingHorizontal: spacing.base,
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  toolsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  toolsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  toolChip: {
+    minWidth: 96,
   },
   actions: {
     alignItems: 'center',

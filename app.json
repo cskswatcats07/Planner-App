@@ -15,6 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
+      "requiresFullScreen": false,
       "bundleIdentifier": "com.mindpilot.app",
       "buildNumber": "2",
       "config": {
@@ -30,6 +31,7 @@
         "backgroundColor": "#FAFAF8"
       },
       "edgeToEdgeEnabled": true,
+      "supportsTablet": true,
       "package": "com.mindpilot.app",
       "versionCode": 2,
       "permissions": [
@@ -66,6 +68,12 @@
       ],
       "expo-web-browser",
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c27b9c10-9fd0-4a0d-a484-511846a1045f"
+      }
+    }
   }
 }

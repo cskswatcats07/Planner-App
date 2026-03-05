@@ -65,6 +65,24 @@ export default function DashboardScreen() {
           </Text>
         </View>
 
+        <Card variant="outlined" padding="lg" style={styles.healthCta}>
+          <Text style={[styles.ctaTitle, { color: theme.colors.text }]}>
+            Health Dashboard
+          </Text>
+          <Text style={[styles.ctaDesc, { color: theme.colors.textSecondary }]}>
+            Securely track prescriptions, nutrition, and health metrics in one
+            place. All fields are optional and encrypted before they leave your
+            device.
+          </Text>
+          <Button
+            title="Open Health Dashboard"
+            onPress={() => router.push('/(protected)/health')}
+            variant="outline"
+            size="md"
+            fullWidth
+          />
+        </Card>
+
         {!result && (
           <Card variant="elevated" padding="lg" style={styles.assessmentCta}>
             <Text style={[styles.ctaTitle, { color: theme.colors.text }]}>
@@ -181,6 +199,9 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   assessmentCta: {
+    gap: spacing.md,
+  },
+  healthCta: {
     gap: spacing.md,
   },
   ctaTitle: {

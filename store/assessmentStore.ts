@@ -2,11 +2,16 @@ import { create } from 'zustand';
 import type {
   AssessmentAnswer,
   AssessmentResult,
+  AssessmentMode,
   ChallengeCategory,
   CategoryScore,
   LikertValue,
 } from '../types/assessment';
-import { ASSESSMENT_QUESTIONS, CATEGORY_LABELS } from '../constants/assessment-questions';
+import {
+  ASSESSMENT_QUESTIONS,
+  CATEGORY_LABELS,
+  QUICK_ASSESSMENT_QUESTIONS,
+} from '../constants/assessment-questions';
 import { saveAssessmentResult, getAssessmentResult } from '../lib/storage';
 
 interface AssessmentStore {
@@ -14,8 +19,10 @@ interface AssessmentStore {
   currentQuestionIndex: number;
   result: AssessmentResult | null;
   isLoaded: boolean;
+  mode: AssessmentMode;
 
   loadSavedResult: () => Promise<void>;
+  start: (mode: AssessmentMode) => void;
   setAnswer: (questionId: string, value: LikertValue) => void;
   nextQuestion: () => void;
   previousQuestion: () => void;
@@ -24,14 +31,22 @@ interface AssessmentStore {
   reset: () => void;
 }
 
-function computeCategoryScores(answers: AssessmentAnswer[]): CategoryScore[] {
+function getQuestionsForMode(mode: AssessmentMode) {
+  return mode === 'quick' ? QUICK_ASSESSMENT_QUESTIONS : ASSESSMENT_QUESTIONS;
+}
+
+function computeCategoryScores(
+  answers: AssessmentAnswer[],
+  mode: AssessmentMode
+): CategoryScore[] {
   const categories: ChallengeCategory[] = [
     'timeBlindness', 'finance', 'tasks', 'memory',
     'dopamine', 'speech', 'thoughts', 'impulse',
   ];
 
   return categories.map((category) => {
-    const categoryQuestions = ASSESSMENT_QUESTIONS.filter(
+    const questionSet = getQuestionsForMode(mode);
+    const categoryQuestions = questionSet.filter(
       (q) => q.category === category
     );
     const categoryAnswers = answers.filter((a) =>
@@ -57,10 +72,19 @@ export const useAssessmentStore = create<AssessmentStore>((set, get) => ({
   currentQuestionIndex: 0,
   result: null,
   isLoaded: false,
+  mode: 'quick',
 
   loadSavedResult: async () => {
     const result = await getAssessmentResult();
     set({ result, isLoaded: true });
+  },
+
+  start: (mode) => {
+    set({
+      mode,
+      answers: [],
+      currentQuestionIndex: 0,
+    });
   },
 
   setAnswer: (questionId, value) => {
@@ -78,8 +102,9 @@ export const useAssessmentStore = create<AssessmentStore>((set, get) => ({
   },
 
   nextQuestion: () => {
-    const { currentQuestionIndex } = get();
-    if (currentQuestionIndex < ASSESSMENT_QUESTIONS.length - 1) {
+    const { currentQuestionIndex, mode } = get();
+    const questionSet = getQuestionsForMode(mode);
+    if (currentQuestionIndex < questionSet.length - 1) {
       set({ currentQuestionIndex: currentQuestionIndex + 1 });
     }
   },
@@ -92,14 +117,16 @@ export const useAssessmentStore = create<AssessmentStore>((set, get) => ({
   },
 
   goToQuestion: (index) => {
-    if (index >= 0 && index < ASSESSMENT_QUESTIONS.length) {
+    const { mode } = get();
+    const questionSet = getQuestionsForMode(mode);
+    if (index >= 0 && index < questionSet.length) {
       set({ currentQuestionIndex: index });
     }
   },
 
   computeAndSaveResults: async () => {
-    const { answers } = get();
-    const categoryScores = computeCategoryScores(answers);
+    const { answers, mode } = get();
+    const categoryScores = computeCategoryScores(answers, mode);
 
     const RECOMMENDATION_THRESHOLD = 0.5;
     const recommendedModules = categoryScores
@@ -112,6 +139,7 @@ export const useAssessmentStore = create<AssessmentStore>((set, get) => ({
       answers,
       categoryScores,
       recommendedModules,
+      mode,
     };
 
     await saveAssessmentResult(result);

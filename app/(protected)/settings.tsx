@@ -97,8 +97,15 @@ export default function SettingsScreen() {
 
         <Card variant="outlined" padding="lg" style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            Legal
+            Help & Legal
           </Text>
+          <Button
+            title="FAQs"
+            onPress={() => router.push('/(public)/faq')}
+            variant="outline"
+            size="md"
+            fullWidth
+          />
           <Button
             title="Privacy Policy"
             onPress={() => router.push('/(public)/privacy-policy')}

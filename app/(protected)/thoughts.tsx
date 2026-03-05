@@ -15,12 +15,14 @@ import {
   type ThoughtTag,
   type ThoughtsState,
 } from '../../lib/thoughts';
+import { useToolStore } from '../../store/toolStore';
 
 const TAGS: ThoughtTag[] = ['action', 'worry', 'idea', 'later'];
 
 export default function ThoughtsScreen() {
   const theme = useTheme();
   const colors = moduleColors.thoughts;
+  const { markUsed } = useToolStore();
   const [state, setState] = useState<ThoughtsState | null>(null);
   const [thoughtInput, setThoughtInput] = useState('');
   const [tag, setTag] = useState<ThoughtTag>('action');
@@ -32,6 +34,10 @@ export default function ThoughtsScreen() {
   useEffect(() => {
     loadThoughtsState().then(setState).catch(() => setStatusMessage('Unable to load thought tools.'));
   }, []);
+
+  useEffect(() => {
+    markUsed('thoughts');
+  }, [markUsed]);
 
   const handleAddThought = async () => {
     if (!thoughtInput.trim()) {

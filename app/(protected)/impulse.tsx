@@ -14,6 +14,7 @@ import {
   loadImpulseState,
   type ImpulseState,
 } from '../../lib/impulse';
+import { useToolStore } from '../../store/toolStore';
 
 function formatMMSS(seconds: number): string {
   const m = Math.floor(seconds / 60)
@@ -26,6 +27,7 @@ function formatMMSS(seconds: number): string {
 export default function ImpulseScreen() {
   const theme = useTheme();
   const colors = moduleColors.impulse;
+  const { markUsed } = useToolStore();
   const [state, setState] = useState<ImpulseState | null>(null);
   const [pauseMinutesInput, setPauseMinutesInput] = useState('2');
   const [pauseSecondsLeft, setPauseSecondsLeft] = useState(120);
@@ -42,6 +44,10 @@ export default function ImpulseScreen() {
   useEffect(() => {
     loadImpulseState().then(setState).catch(() => setStatusMessage('Unable to load impulse tools.'));
   }, []);
+
+  useEffect(() => {
+    markUsed('impulse');
+  }, [markUsed]);
 
   useEffect(() => {
     if (!isRunning) return;

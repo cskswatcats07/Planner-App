@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { View } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
@@ -20,14 +21,16 @@ export default function ProtectedLayout() {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        animation: 'fade',
-        contentStyle: {
-          backgroundColor: isDark ? '#1C1C1E' : '#FAFAF8',
-        },
-      }}
-    />
+    <View style={{ flex: 1 }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          animation: 'fade',
+          contentStyle: {
+            backgroundColor: isDark ? '#1C1C1E' : '#FAFAF8',
+          },
+        }}
+      />
+    </View>
   );
 }

@@ -12,12 +12,14 @@ import { spacing } from '../../../theme/spacing';
 import { DISCLAIMERS } from '../../../constants/disclaimers';
 import { APP_MODULES } from '../../../constants/modules';
 import { useAssessmentStore } from '../../../store/assessmentStore';
+import { useAuthStore } from '../../../store/authStore';
 import type { ModuleColorKey } from '../../../theme/colors';
 
 export default function AssessmentResultsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { result, loadSavedResult, isLoaded } = useAssessmentStore();
+   const { user } = useAuthStore();
 
   useEffect(() => {
     if (!isLoaded) {
@@ -48,6 +50,14 @@ export default function AssessmentResultsScreen() {
     result.recommendedModules.includes(m.id)
   );
 
+  const isAuthed = !!user;
+  const detailedUnlocked = isAuthed;
+
+  const sortedScores = [...result.categoryScores].sort(
+    (a, b) => b.percentage - a.percentage
+  );
+  const topScores = sortedScores.slice(0, 3);
+
   return (
     <SafeAreaWrapper>
       <Header title="Your Results" showBack />
@@ -66,15 +76,75 @@ export default function AssessmentResultsScreen() {
 
         <Card variant="elevated" padding="lg">
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            Challenge Intensity
+            Summary (no account required)
           </Text>
-          <View style={{ height: spacing.base }} />
-          <RadarChart scores={result.categoryScores} />
-          <View style={{ height: spacing.base }} />
-          <CategoryChart scores={result.categoryScores} />
+          <View style={{ height: spacing.sm }} />
+          {topScores.length > 0 ? (
+            <View style={styles.summaryList}>
+              {topScores.map((score) => (
+                <View key={score.category} style={styles.summaryItem}>
+                  <Text
+                    style={[styles.summaryCategory, { color: theme.colors.text }]}
+                  >
+                    {score.label}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.summaryValue,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
+                    {(score.percentage * 100).toFixed(0)}% intensity
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <Text style={[styles.summaryEmpty, { color: theme.colors.textSecondary }]}>
+              Your responses were too sparse to summarize. You can retake the
+              assessment at any time.
+            </Text>
+          )}
         </Card>
 
-        {recommendedModules.length > 0 && (
+        {detailedUnlocked ? (
+          <Card variant="elevated" padding="lg">
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              Challenge Intensity (detailed)
+            </Text>
+            <View style={{ height: spacing.base }} />
+            <RadarChart scores={result.categoryScores} />
+            <View style={{ height: spacing.base }} />
+            <CategoryChart scores={result.categoryScores} />
+          </Card>
+        ) : (
+          <Card variant="outlined" padding="lg">
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              Unlock detailed charts & personalized tools
+            </Text>
+            <Text style={[styles.sectionDesc, { color: theme.colors.textSecondary }]}>
+              Create a free account to see full charts, trends, and personalized
+              tool recommendations based on your results.
+            </Text>
+            <View style={{ height: spacing.sm }} />
+            <Button
+              title="Create Account"
+              onPress={() => router.push('/(auth)/signup')}
+              variant="primary"
+              size="md"
+              fullWidth
+            />
+            <Button
+              title="Sign In"
+              onPress={() => router.push('/(auth)/login')}
+              variant="ghost"
+              size="sm"
+              fullWidth
+            />
+          </Card>
+        )}
+
+        {detailedUnlocked && recommendedModules.length > 0 && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
               Recommended For You
@@ -110,13 +180,15 @@ export default function AssessmentResultsScreen() {
         )}
 
         <View style={styles.actions}>
-          <Button
-            title="Create Account to Unlock Tools"
-            onPress={() => router.push('/(auth)/signup')}
-            variant="primary"
-            size="lg"
-            fullWidth
-          />
+          {!detailedUnlocked && (
+            <Button
+              title="Create Account to Unlock More Detail"
+              onPress={() => router.push('/(auth)/signup')}
+              variant="primary"
+              size="lg"
+              fullWidth
+            />
+          )}
           <Button
             title="Explore All Features"
             onPress={() => router.push('/(public)/explore')}
@@ -169,6 +241,25 @@ const styles = StyleSheet.create({
   sectionDesc: {
     fontSize: 14,
     lineHeight: 21,
+  },
+  summaryList: {
+    gap: spacing.sm,
+  },
+  summaryItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  summaryCategory: {
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  summaryValue: {
+    fontSize: 14,
+  },
+  summaryEmpty: {
+    fontSize: 13,
+    lineHeight: 19,
   },
   moduleList: {
     gap: spacing.md,
