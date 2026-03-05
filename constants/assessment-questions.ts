@@ -137,7 +137,7 @@ export const ASSESSMENT_QUESTIONS: AssessmentQuestion[] = [
     category: 'impulse',
   },
 ];
-
+ 
 export const CATEGORY_LABELS: Record<string, string> = {
   timeBlindness: 'Time Awareness',
   finance: 'Money Management',
@@ -148,3 +148,20 @@ export const CATEGORY_LABELS: Record<string, string> = {
   thoughts: 'Thought Management',
   impulse: 'Impulse Management',
 };
+
+// Quick assessment: one high-signal question per category
+export const QUICK_ASSESSMENT_QUESTION_IDS: string[] = [
+  'tb-2', // Time Blindness
+  'fi-2', // Finance
+  'tk-2', // Tasks
+  'me-2', // Memory
+  'dp-3', // Dopamine / motivation
+  'sp-2', // Speech
+  'th-2', // Thoughts
+  'im-2', // Impulse
+];
+
+export const QUICK_ASSESSMENT_QUESTIONS: AssessmentQuestion[] =
+  ASSESSMENT_QUESTIONS.filter((q) =>
+    QUICK_ASSESSMENT_QUESTION_IDS.includes(q.id)
+  );

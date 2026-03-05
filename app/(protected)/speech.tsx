@@ -18,6 +18,7 @@ import {
   type SpeechState,
 } from '../../lib/speech';
 import { generateSpeechAudioFeedback } from '../../lib/gemini';
+import { useToolStore } from '../../store/toolStore';
 
 const TEMPLATE_TYPES: MessageDraft['templateType'][] = ['checkIn', 'boundary', 'followUp'];
 
@@ -32,6 +33,7 @@ function formatMMSS(seconds: number): string {
 export default function SpeechScreen() {
   const theme = useTheme();
   const colors = moduleColors.speech;
+  const { markUsed } = useToolStore();
   const [state, setState] = useState<SpeechState | null>(null);
   const [context, setContext] = useState('');
   const [goal, setGoal] = useState('');
@@ -58,6 +60,10 @@ export default function SpeechScreen() {
   useEffect(() => {
     loadSpeechState().then(setState).catch(() => setStatusMessage('Unable to load speech tools.'));
   }, []);
+
+  useEffect(() => {
+    markUsed('speech');
+  }, [markUsed]);
 
   useEffect(() => {
     if (!isPaceRunning) return;
