@@ -21,6 +21,7 @@ import {
   type FinanceState,
 } from '../../lib/finance';
 import { ensureNotificationPermission, getNotificationPermissionState } from '../../lib/notifications';
+import { useToolStore } from '../../store/toolStore';
 
 const CATEGORY_OPTIONS: ExpenseItem['category'][] = [
   'food',
@@ -40,6 +41,7 @@ function toLocalDatetimeInputValue(date: Date): string {
 export default function FinanceScreen() {
   const theme = useTheme();
   const colors = moduleColors.finance;
+  const { markUsed } = useToolStore();
   const [state, setState] = useState<FinanceState | null>(null);
 
   const [amountInput, setAmountInput] = useState('');
@@ -82,6 +84,10 @@ export default function FinanceScreen() {
         // keep default hint
       });
   }, []);
+
+  useEffect(() => {
+    markUsed('finance');
+  }, [markUsed]);
 
   const weeklySpend = useMemo(
     () => getWeeklySpend(state?.expenses ?? []),

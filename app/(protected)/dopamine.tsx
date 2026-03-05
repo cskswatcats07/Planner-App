@@ -15,6 +15,7 @@ import {
   type DopamineState,
   type EnergyMode,
 } from '../../lib/dopamine';
+import { useToolStore } from '../../store/toolStore';
 
 const ENERGY_MODES: EnergyMode[] = ['low', 'medium', 'high'];
 
@@ -26,6 +27,7 @@ function pickPrompt(mode: EnergyMode): string {
 export default function DopamineScreen() {
   const theme = useTheme();
   const colors = moduleColors.dopamine;
+  const { markUsed } = useToolStore();
   const [state, setState] = useState<DopamineState | null>(null);
   const [prompt, setPrompt] = useState('');
   const [statusMessage, setStatusMessage] = useState('Momentum is built in tiny wins.');
@@ -38,6 +40,10 @@ export default function DopamineScreen() {
       })
       .catch(() => setStatusMessage('Unable to load motivation data.'));
   }, []);
+
+  useEffect(() => {
+    markUsed('dopamine');
+  }, [markUsed]);
 
   const energyMode = state?.energyMode ?? 'medium';
   const energyPlan = useMemo(() => {

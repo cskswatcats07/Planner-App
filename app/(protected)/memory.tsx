@@ -18,6 +18,7 @@ import {
   type MemoryState,
 } from '../../lib/memory';
 import { ensureNotificationPermission, getNotificationPermissionState } from '../../lib/notifications';
+import { useToolStore } from '../../store/toolStore';
 
 function toLocalDatetimeInputValue(date: Date): string {
   const pad = (n: number) => `${n}`.padStart(2, '0');
@@ -29,6 +30,7 @@ function toLocalDatetimeInputValue(date: Date): string {
 export default function MemoryScreen() {
   const theme = useTheme();
   const colors = moduleColors.memory;
+  const { markUsed } = useToolStore();
   const [state, setState] = useState<MemoryState | null>(null);
   const [captureInput, setCaptureInput] = useState('');
   const [reminderText, setReminderText] = useState('');
@@ -59,6 +61,10 @@ export default function MemoryScreen() {
         // keep default hint
       });
   }, []);
+
+  useEffect(() => {
+    markUsed('memory');
+  }, [markUsed]);
 
   const unresolvedCount = useMemo(
     () => (state?.captures ?? []).filter((item) => !item.isResolved).length,

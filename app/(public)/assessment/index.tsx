@@ -8,16 +8,24 @@ import { Card } from '../../../components/ui/Card';
 import { useTheme } from '../../../theme';
 import { spacing } from '../../../theme/spacing';
 import { DISCLAIMERS } from '../../../constants/disclaimers';
-import { ASSESSMENT_QUESTIONS } from '../../../constants/assessment-questions';
+import {
+  ASSESSMENT_QUESTIONS,
+  QUICK_ASSESSMENT_QUESTIONS,
+} from '../../../constants/assessment-questions';
 import { useAssessmentStore } from '../../../store/assessmentStore';
 
 export default function AssessmentIntroScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const reset = useAssessmentStore((s) => s.reset);
+  const start = useAssessmentStore((s) => s.start);
 
-  const handleStart = () => {
-    reset();
+  const handleStartQuick = () => {
+    start('quick');
+    router.push('/(public)/assessment/questions');
+  };
+
+  const handleStartDetailed = () => {
+    start('detailed');
     router.push('/(public)/assessment/questions');
   };
 
@@ -41,28 +49,19 @@ export default function AssessmentIntroScreen() {
         <Card variant="outlined" style={styles.infoCard}>
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.colors.textSecondary }]}>
-              Questions
+              Quick assessment
             </Text>
             <Text style={[styles.infoValue, { color: theme.colors.text }]}>
-              {ASSESSMENT_QUESTIONS.length}
+              {QUICK_ASSESSMENT_QUESTIONS.length} questions · ~2–3 minutes
             </Text>
           </View>
           <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.colors.textSecondary }]}>
-              Time
+              Detailed assessment
             </Text>
             <Text style={[styles.infoValue, { color: theme.colors.text }]}>
-              ~5 minutes
-            </Text>
-          </View>
-          <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />
-          <View style={styles.infoRow}>
-            <Text style={[styles.infoLabel, { color: theme.colors.textSecondary }]}>
-              Categories
-            </Text>
-            <Text style={[styles.infoValue, { color: theme.colors.text }]}>
-              8 areas
+              {ASSESSMENT_QUESTIONS.length} questions · ~5–7 minutes
             </Text>
           </View>
         </Card>
@@ -75,9 +74,17 @@ export default function AssessmentIntroScreen() {
 
         <View style={styles.actions}>
           <Button
-            title="Begin Assessment"
-            onPress={handleStart}
+            title="Quick Assessment"
+            onPress={handleStartQuick}
             variant="primary"
+            size="lg"
+            fullWidth
+          />
+          <View style={styles.actionsSpacer} />
+          <Button
+            title="Detailed Assessment"
+            onPress={handleStartDetailed}
+            variant="outline"
             size="lg"
             fullWidth
           />
@@ -143,6 +150,9 @@ const styles = StyleSheet.create({
   },
   actions: {
     marginBottom: spacing['2xl'],
+  },
+  actionsSpacer: {
+    height: spacing.sm,
   },
   footer: {
     fontSize: 11,

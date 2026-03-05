@@ -19,6 +19,7 @@ import {
   type PriorityQuadrant,
   type TasksState,
 } from '../../lib/tasks';
+import { useToolStore } from '../../store/toolStore';
 
 const QUADRANTS: { key: PriorityQuadrant; label: string }[] = [
   { key: 'urgentImportant', label: 'Urgent + Important' },
@@ -30,6 +31,7 @@ const QUADRANTS: { key: PriorityQuadrant; label: string }[] = [
 export default function TasksScreen() {
   const theme = useTheme();
   const colors = moduleColors.tasks;
+  const { markUsed } = useToolStore();
   const [state, setState] = useState<TasksState | null>(null);
   const [taskTitle, setTaskTitle] = useState('');
   const [stepsInput, setStepsInput] = useState('');
@@ -43,6 +45,10 @@ export default function TasksScreen() {
       .then(setState)
       .catch(() => setStatusMessage('Unable to load tasks data.'));
   }, []);
+
+  useEffect(() => {
+    markUsed('tasks');
+  }, [markUsed]);
 
   const completionRate = useMemo(() => {
     const steps = (state?.breakdowns ?? []).flatMap((item) => item.steps);

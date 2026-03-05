@@ -37,9 +37,12 @@ export interface CategoryScore {
   label: string;
 }
 
+export type AssessmentMode = 'quick' | 'detailed';
+
 export interface AssessmentResult {
   completedAt: string;
   answers: AssessmentAnswer[];
   categoryScores: CategoryScore[];
   recommendedModules: ChallengeCategory[];
+  mode: AssessmentMode;
 }
